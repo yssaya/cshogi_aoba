@@ -8,11 +8,11 @@ import datetime
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
-from cshogi import *
-from cshogi.usi import Engine
-from cshogi import CSA
-from cshogi import PGN
-from cshogi.elo import Elo
+from cshogi_aoba import *
+from cshogi_aoba.usi import Engine
+from cshogi_aoba import CSA
+from cshogi_aoba import PGN
+from cshogi_aoba.elo import Elo
 
 try:
     is_jupyter = get_ipython().__class__.__name__ != 'TerminalInteractiveShell'

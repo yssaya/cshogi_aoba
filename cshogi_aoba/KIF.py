@@ -21,8 +21,8 @@ import codecs
 from datetime import datetime
 import math
 
-import cshogi
-from cshogi import Board, BLACK_WIN, WHITE_WIN, DRAW, move_to
+import cshogi_aoba
+from cshogi_aoba import Board, BLACK_WIN, WHITE_WIN, DRAW, move_to
 
 KIFU_TO_SQUARE_NAMES = [
     '１一', '１二', '１三', '１四', '１五', '１六', '１七', '１八', '１九',
@@ -65,7 +65,7 @@ class Parser:
     MOVE_RE = re.compile(r'\A *[0-9]+\s+(中断|投了|持将棋|千日手|詰み|切れ負け|反則勝ち|反則負け|(([１２３４５６７８９])([零一二三四五六七八九])|同　)([歩香桂銀金角飛玉と杏圭全馬龍])(打|(成?)\(([0-9])([0-9])\)))\s*(\( *([:0-9]+)/([:0-9]+)\))?.*\Z')
 
     HANDYCAP_SFENS = {
-        '平手': cshogi.STARTING_SFEN,
+        '平手': cshogi_aoba.STARTING_SFEN,
         '香落ち': 'lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1',
         '右香落ち': '1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1',
         '角落ち': 'lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1',
@@ -111,10 +111,10 @@ class Parser:
         result = {}
         for item in target.split('　'):
             if len(item) == 1:
-                result[cshogi.PIECE_JAPANESE_SYMBOLS.index(item)] = 1
+                result[cshogi_aoba.PIECE_JAPANESE_SYMBOLS.index(item)] = 1
             elif len(item) == 2 or len(item) == 3:
-                result[cshogi.PIECE_JAPANESE_SYMBOLS.index(item[0])] = \
-                    cshogi.NUMBER_JAPANESE_KANJI_SYMBOLS.index(item[1:])
+                result[cshogi_aoba.PIECE_JAPANESE_SYMBOLS.index(item[0])] = \
+                    cshogi_aoba.NUMBER_JAPANESE_KANJI_SYMBOLS.index(item[1:])
             elif len(item) == 0:
                 pass
             else:
@@ -155,13 +155,13 @@ class Parser:
                     '反則勝ち',
                     '反則負け'
                 ]:
-                piece_type = cshogi.PIECE_JAPANESE_SYMBOLS.index(m.group(5))
+                piece_type = cshogi_aoba.PIECE_JAPANESE_SYMBOLS.index(m.group(5))
                 if m.group(2) == '同　':
                     # same position
                     to_square = move_to(board.peek())
                 else:
-                    to_field = cshogi.NUMBER_JAPANESE_NUMBER_SYMBOLS.index(m.group(3)) - 1
-                    to_rank = cshogi.NUMBER_JAPANESE_KANJI_SYMBOLS.index(m.group(4)) - 1
+                    to_field = cshogi_aoba.NUMBER_JAPANESE_NUMBER_SYMBOLS.index(m.group(3)) - 1
+                    to_rank = cshogi_aoba.NUMBER_JAPANESE_KANJI_SYMBOLS.index(m.group(4)) - 1
                     to_square = to_rank + to_field * 9
 
                 if m.group(6) == '打' or (m.group(8) == '0' and m.group(9) == '0'):
@@ -191,7 +191,7 @@ class Parser:
         starttime = None
         names = [None, None]
         pieces_in_hand = [{}, {}]
-        sfen = cshogi.STARTING_SFEN
+        sfen = cshogi_aoba.STARTING_SFEN
         var_info = {}
         header_comments = []
         moves = []
@@ -233,16 +233,16 @@ class Parser:
 
                 if key == '先手' or key == '下手': # sente or shitate
                     # Blacks's name
-                    names[cshogi.BLACK] = value
+                    names[cshogi_aoba.BLACK] = value
                 elif key == '後手' or key == '上手': # gote or uwate
                     # White's name
-                    names[cshogi.WHITE] = value
+                    names[cshogi_aoba.WHITE] = value
                 elif key == '先手の持駒' or key == '下手の持駒': # sente or shitate's pieces in hand
                     # First player's pieces in hand
-                    pieces_in_hand[cshogi.BLACK] == Parser.parse_pieces_in_hand(value)
+                    pieces_in_hand[cshogi_aoba.BLACK] == Parser.parse_pieces_in_hand(value)
                 elif key == '後手の持駒' or key == '上手の持駒': # gote or uwate's pieces in hand
                     # Second player's pieces in hand
-                    pieces_in_hand[cshogi.WHITE] == Parser.parse_pieces_in_hand(value)
+                    pieces_in_hand[cshogi_aoba.WHITE] == Parser.parse_pieces_in_hand(value)
                 elif key == '手合割': # teai wari
                     sfen = Parser.HANDYCAP_SFENS[value]
                     if sfen is None:
@@ -315,15 +315,15 @@ def move_to_kif(move: int, prev_move: Optional[int] = None) -> str:
     :param board: A Board object representing the current state of the game.
     :return: A string representing the move in KIF notation.
     """
-    to_sq = cshogi.move_to(move)
+    to_sq = cshogi_aoba.move_to(move)
     move_to = KIFU_TO_SQUARE_NAMES[to_sq]
     if prev_move:
-        if cshogi.move_to(prev_move) == to_sq:
+        if cshogi_aoba.move_to(prev_move) == to_sq:
             move_to = "同　"
-    if not cshogi.move_is_drop(move):
-        from_sq = cshogi.move_from(move)
-        move_piece = cshogi.PIECE_JAPANESE_SYMBOLS[cshogi.move_from_piece_type(move)]
-        if cshogi.move_is_promotion(move):
+    if not cshogi_aoba.move_is_drop(move):
+        from_sq = cshogi_aoba.move_from(move)
+        move_piece = cshogi_aoba.PIECE_JAPANESE_SYMBOLS[cshogi_aoba.move_from_piece_type(move)]
+        if cshogi_aoba.move_is_promotion(move):
             return '{}{}成({})'.format(
                 move_to,
                 move_piece,
@@ -336,7 +336,7 @@ def move_to_kif(move: int, prev_move: Optional[int] = None) -> str:
                 KIFU_FROM_SQUARE_NAMES[from_sq],
                 )
     else:
-        move_piece = cshogi.HAND_PIECE_JAPANESE_SYMBOLS[cshogi.move_drop_hand_piece(move)]
+        move_piece = cshogi_aoba.HAND_PIECE_JAPANESE_SYMBOLS[cshogi_aoba.move_drop_hand_piece(move)]
         return '{}{}打'.format(
             move_to,
             move_piece
@@ -351,9 +351,9 @@ def board_to_bod(board: Board) -> str:
     def hand_pieces_str(color):
         if any(board.pieces_in_hand[color]):
             str_list = []
-            for symbol, n in zip(reversed(cshogi.HAND_PIECE_JAPANESE_SYMBOLS), reversed(board.pieces_in_hand[color])):
+            for symbol, n in zip(reversed(cshogi_aoba.HAND_PIECE_JAPANESE_SYMBOLS), reversed(board.pieces_in_hand[color])):
                 if n > 1:
-                    str_list.append(symbol + cshogi.NUMBER_JAPANESE_KANJI_SYMBOLS[n])
+                    str_list.append(symbol + cshogi_aoba.NUMBER_JAPANESE_KANJI_SYMBOLS[n])
                 elif n == 1:
                     str_list.append(symbol)
             return '　'.join(str_list)
@@ -361,16 +361,16 @@ def board_to_bod(board: Board) -> str:
             return 'なし'
 
     str_list = [
-        '後手の持駒：' + hand_pieces_str(cshogi.WHITE),
+        '後手の持駒：' + hand_pieces_str(cshogi_aoba.WHITE),
         '  ９ ８ ７ ６ ５ ４ ３ ２ １',
         '+---------------------------+'
     ]
     str_list.extend(
-        ['|' + ''.join([PIECE_BOD_SYMBOLS[board.piece(f * 9 + r)] for f in reversed(range(9))]) + '|' + cshogi.NUMBER_JAPANESE_KANJI_SYMBOLS[r + 1] for r in range(9)]
+        ['|' + ''.join([PIECE_BOD_SYMBOLS[board.piece(f * 9 + r)] for f in reversed(range(9))]) + '|' + cshogi_aoba.NUMBER_JAPANESE_KANJI_SYMBOLS[r + 1] for r in range(9)]
     )
     str_list.append('+---------------------------+')
-    str_list.append('先手の持駒：' + hand_pieces_str(cshogi.BLACK))
-    if board.turn == cshogi.WHITE:
+    str_list.append('先手の持駒：' + hand_pieces_str(cshogi_aoba.BLACK))
+    if board.turn == cshogi_aoba.WHITE:
         str_list.append('後手番')
 
     return '\n'.join(str_list)
@@ -382,10 +382,10 @@ def move_to_bod(move: int, board: Board) -> str:
     :param board: A Board object representing the current state of the Shogi game.
     :return: A string representing the move in Board Diagram (BOD) format.
     """
-    import cshogi.KI2
-    move_str = cshogi.KI2.move_to_ki2(move, board)
+    import cshogi_aoba.KI2
+    move_str = cshogi_aoba.KI2.move_to_ki2(move, board)
     if move_str[1] == '同':
-        to_sq = cshogi.move_to(move)
+        to_sq = cshogi_aoba.move_to(move)
         return move_str[0] + KIFU_TO_SQUARE_NAMES[to_sq] + '同' + move_str[3:]
     else:
         return move_str
@@ -451,9 +451,9 @@ class Exporter:
         m, s = divmod(math.ceil(sec), 60)
         h_sum, m_sum, s_sum = sec_to_time(sec_sum)
 
-        if cshogi.move_is_drop(move):
+        if cshogi_aoba.move_is_drop(move):
             padding = '    '
-        elif cshogi.move_is_promotion(move):
+        elif cshogi_aoba.move_is_promotion(move):
             padding = ''
         else:
             padding = '  '
@@ -538,13 +538,13 @@ class Exporter:
                 i += 1
                 if items[i] == 'cp':
                     i += 1
-                    comment += ' 評価値 {}'.format(items[i] if turn == cshogi.BLACK else -int(items[i]))
+                    comment += ' 評価値 {}'.format(items[i] if turn == cshogi_aoba.BLACK else -int(items[i]))
                 elif items[i] == 'mate':
                     i += 1
                     if items[i][0:1] == '+':
-                        comment += ' +詰' if turn == cshogi.BLACK else ' -詰'
+                        comment += ' +詰' if turn == cshogi_aoba.BLACK else ' -詰'
                     else:
-                        comment += ' -詰' if turn == cshogi.BLACK else ' +詰'
+                        comment += ' -詰' if turn == cshogi_aoba.BLACK else ' +詰'
                     comment += str(items[i][1:])
             else:
                 i += 1

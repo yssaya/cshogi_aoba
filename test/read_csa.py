@@ -1,4 +1,4 @@
-import cshogi
+import cshogi_aoba
 import numpy as np
 import sys
 import glob
@@ -10,18 +10,18 @@ import copy
 # read kifu
 def read_kifu_cython(kifu_list):
     positions = []
-    parser = cshogi.Parser()
+    parser = cshogi_aoba.Parser()
     for filepath in kifu_list:
         parser.parse_csa_file(filepath)
-        board = cshogi.Board()
+        board = cshogi_aoba.Board()
         for move, score in zip(parser.moves, parser.scores):
-            hcpe = np.empty(1, dtype=cshogi.HuffmanCodedPosAndEval)
+            hcpe = np.empty(1, dtype=cshogi_aoba.HuffmanCodedPosAndEval)
             # hcp
             board.to_hcp(hcpe[0]['hcp'])
             # eval
             hcpe[0]['eval'] = score
             # move
-            hcpe[0]['bestMove16'] = cshogi.move16(move)
+            hcpe[0]['bestMove16'] = cshogi_aoba.move16(move)
             # result
             hcpe[0]['gameResult'] = parser.win
 
@@ -31,7 +31,7 @@ def read_kifu_cython(kifu_list):
 
 def read_kifu(kifu_list):
     positions = []
-    parser = cshogi.Parser()
+    parser = cshogi_aoba.Parser()
     for filepath in kifu_list:
         kifu = shogi.CSA.Parser.parse_file(filepath)[0]
         board = shogi.Board()

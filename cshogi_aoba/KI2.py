@@ -2,8 +2,8 @@ from typing import Dict, List, Optional
 import re
 from datetime import datetime
 
-import cshogi
-from cshogi import Board, KIF, BLACK_WIN, WHITE_WIN, DRAW, move_to, move_from, move_is_drop, move_is_promotion, move_from_piece_type, move_drop_hand_piece, hand_piece_to_piece_type
+import cshogi_aoba
+from cshogi_aoba import Board, KIF, BLACK_WIN, WHITE_WIN, DRAW, move_to, move_from, move_is_drop, move_is_promotion, move_from_piece_type, move_drop_hand_piece, hand_piece_to_piece_type
 
 class Parser:
     """A class for parsing Japanese Shogi notation in KI2 format."""
@@ -11,7 +11,7 @@ class Parser:
     MOVE_RE = re.compile(r'(▲|△)(([１２３４５６７８９])([零一二三四五六七八九])|同　?)([歩香桂銀金角飛玉と杏圭全馬龍])(左|直|右)?(上|寄|引)?(打|成|不成)?\s*')
 
     HANDYCAP_SFENS = {
-        '平手': cshogi.STARTING_SFEN,
+        '平手': cshogi_aoba.STARTING_SFEN,
         '香落ち': 'lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1',
         '右香落ち': '1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1',
         '角落ち': 'lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1',
@@ -55,10 +55,10 @@ class Parser:
         result = {}
         for item in target.split('　'):
             if len(item) == 1:
-                result[cshogi.PIECE_JAPANESE_SYMBOLS.index(item)] = 1
+                result[cshogi_aoba.PIECE_JAPANESE_SYMBOLS.index(item)] = 1
             elif len(item) == 2 or len(item) == 3:
-                result[cshogi.PIECE_JAPANESE_SYMBOLS.index(item[0])] = \
-                    cshogi.NUMBER_JAPANESE_KANJI_SYMBOLS.index(item[1:])
+                result[cshogi_aoba.PIECE_JAPANESE_SYMBOLS.index(item[0])] = \
+                    cshogi_aoba.NUMBER_JAPANESE_KANJI_SYMBOLS.index(item[1:])
             elif len(item) == 0:
                 pass
             else:
@@ -85,13 +85,13 @@ class Parser:
         while True:
             m = Parser.MOVE_RE.match(line[pos:])
             if m:
-                piece_type = cshogi.PIECE_JAPANESE_SYMBOLS.index(m.group(5))
+                piece_type = cshogi_aoba.PIECE_JAPANESE_SYMBOLS.index(m.group(5))
                 if m.group(2).rstrip('　') == '同':
                     # same position
                     to_square = move_to(board.peek())
                 else:
-                    to_file = cshogi.NUMBER_JAPANESE_NUMBER_SYMBOLS.index(m.group(3)) - 1
-                    to_rank = cshogi.NUMBER_JAPANESE_KANJI_SYMBOLS.index(m.group(4)) - 1
+                    to_file = cshogi_aoba.NUMBER_JAPANESE_NUMBER_SYMBOLS.index(m.group(3)) - 1
+                    to_rank = cshogi_aoba.NUMBER_JAPANESE_KANJI_SYMBOLS.index(m.group(4)) - 1
                     to_square = to_rank + to_file * 9
 
                 # 候補手
@@ -112,12 +112,12 @@ class Parser:
                             from_rank_max = from_rank
 
                     if m.group(6) == '左':
-                        if board.turn == cshogi.BLACK:
+                        if board.turn == cshogi_aoba.BLACK:
                             candidates = [move for move in candidates if move_from(move) // 9 == from_file_max]
                         else:
                             candidates = [move for move in candidates if move_from(move) // 9 == from_file_min]
                     elif m.group(6) == '右':
-                        if board.turn == cshogi.BLACK:
+                        if board.turn == cshogi_aoba.BLACK:
                             candidates = [move for move in candidates if move_from(move) // 9 == from_file_min]
                         else:
                             candidates = [move for move in candidates if move_from(move) // 9 == from_file_max]
@@ -125,12 +125,12 @@ class Parser:
                         candidates = [move for move in candidates if move_to(move) // 9 == move_from(move) // 9]
 
                     if m.group(7) == '上':
-                        if board.turn == cshogi.BLACK:
+                        if board.turn == cshogi_aoba.BLACK:
                             candidates = [move for move in candidates if move_from(move) % 9 == from_rank_max]
                         else:
                             candidates = [move for move in candidates if move_from(move) % 9 == from_rank_min]
                     elif m.group(7) == '引':
-                        if board.turn == cshogi.BLACK:
+                        if board.turn == cshogi_aoba.BLACK:
                             candidates = [move for move in candidates if move_from(move) % 9 == from_rank_min]
                         else:
                             candidates = [move for move in candidates if move_from(move) % 9 == from_rank_max]
@@ -168,7 +168,7 @@ class Parser:
 
         starttime = None
         names = [None, None]
-        sfen = cshogi.STARTING_SFEN
+        sfen = cshogi_aoba.STARTING_SFEN
         var_info = {}
         header_comments = []
         moves = []
@@ -204,10 +204,10 @@ class Parser:
                             pass
                 elif key == '先手' or key == '下手': # sente or shitate
                     # Blacks's name
-                    names[cshogi.BLACK] = value
+                    names[cshogi_aoba.BLACK] = value
                 elif key == '後手' or key == '上手': # gote or uwate
                     # White's name
-                    names[cshogi.WHITE] = value
+                    names[cshogi_aoba.WHITE] = value
                 elif key == '手合割': # teai wari
                     sfen = Parser.HANDYCAP_SFENS[value]
                     if sfen is None:
@@ -277,10 +277,10 @@ def move_to_ki2(move: int, board: Board) -> str:
     :param board: A Board object representing the current state of the game.
     :return: A string representing the move in KI2 notation.
     """
-    kifu_turn = '▲' if board.turn == cshogi.BLACK else '△'
+    kifu_turn = '▲' if board.turn == cshogi_aoba.BLACK else '△'
     to_square = move_to(move)
     kifu_to = KIF.KIFU_TO_SQUARE_NAMES[to_square]
-    if board.peek() != cshogi.MOVE_NONE:
+    if board.peek() != cshogi_aoba.MOVE_NONE:
         if move_to(board.peek()) == to_square:
             kifu_to = "同"
     if not move_is_drop(move):
@@ -301,13 +301,13 @@ def move_to_ki2(move: int, board: Board) -> str:
                 candidates.append(move2)
         if len(candidates) > 1:
             # 後手は180度回転
-            to_file, to_rank = divmod(to_square if board.turn == cshogi.BLACK else 80 - to_square, 9)
-            from_file, from_rank = divmod(from_square if board.turn == cshogi.BLACK else 80 - from_square, 9)
+            to_file, to_rank = divmod(to_square if board.turn == cshogi_aoba.BLACK else 80 - to_square, 9)
+            from_file, from_rank = divmod(from_square if board.turn == cshogi_aoba.BLACK else 80 - from_square, 9)
             candidates_left = candidates_right = candidates_up = candidates_down = candidates_side = 0
             for move2 in candidates:
                 from_square2 = move_from(move2)
                 # 後手は180度回転
-                from_file2, from_rank2 = divmod(from_square2 if board.turn == cshogi.BLACK else 80 - from_square2, 9)
+                from_file2, from_rank2 = divmod(from_square2 if board.turn == cshogi_aoba.BLACK else 80 - from_square2, 9)
                 if from_file2 > to_file: # 左
                     candidates_left += 1
                 elif from_file2 < to_file: # 右
@@ -370,7 +370,7 @@ def move_to_ki2(move: int, board: Board) -> str:
         hand_peice = move_drop_hand_piece(move)
         piece_type = hand_piece_to_piece_type(hand_peice)
         candidates = [move for move in board.legal_moves if move_to(move) == to_square and not move_is_drop(move) and move_from_piece_type(move) == piece_type]
-        kifu_piece = cshogi.HAND_PIECE_JAPANESE_SYMBOLS[hand_peice]
+        kifu_piece = cshogi_aoba.HAND_PIECE_JAPANESE_SYMBOLS[hand_peice]
         move_str = '{}{}{}{}'.format(
             kifu_turn,
             kifu_to,
@@ -440,14 +440,14 @@ class Exporter:
         """
         # 結果出力
         if reason == '%TORYO':
-            self.kifu.write('まで{}手で{}の勝ち\n'.format(self.board.move_number - 1, '先手' if self.board.turn == cshogi.WHITE else '後手'))
+            self.kifu.write('まで{}手で{}の勝ち\n'.format(self.board.move_number - 1, '先手' if self.board.turn == cshogi_aoba.WHITE else '後手'))
         elif reason == '%JISHOGI':
             self.kifu.write('まで{}手で持将棋\n'.format(self.board.move_number + 1))
         elif reason == '%KACHI':
-            self.kifu.write('まで{}手で{}の入玉勝ち\n'.format(self.board.move_number - 1, '先手' if self.board.turn == cshogi.BLACK else '後手'))
+            self.kifu.write('まで{}手で{}の入玉勝ち\n'.format(self.board.move_number - 1, '先手' if self.board.turn == cshogi_aoba.BLACK else '後手'))
         elif reason == '%SENNICHITE':
             self.kifu.write('まで{}手で千日手\n'.format(self.board.move_number - 1))
         elif reason == '%+ILLEGAL_ACTION' or reason == '%-ILLEGAL_ACTION':
-            self.kifu.write('まで{}手で{}の反則勝ち\n'.format(self.board.move_number - 1, '先手' if self.board.turn == cshogi.WHITE else '後手'))
+            self.kifu.write('まで{}手で{}の反則勝ち\n'.format(self.board.move_number - 1, '先手' if self.board.turn == cshogi_aoba.WHITE else '後手'))
         elif reason == '%ILLEGAL_MOVE':
-            self.kifu.write('まで{}手で{}の反則負け\n'.format(self.move_number - 1, '先手' if self.board.turn == cshogi.WHITE else '後手'))
+            self.kifu.write('まで{}手で{}の反則負け\n'.format(self.move_number - 1, '先手' if self.board.turn == cshogi_aoba.WHITE else '後手'))

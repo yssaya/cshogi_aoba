@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "../src/cshogi.h"
+#include "../src/cshogi_aoba.h"
 #include <array>
 
 

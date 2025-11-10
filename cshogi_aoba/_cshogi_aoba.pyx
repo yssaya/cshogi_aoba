@@ -218,7 +218,7 @@ cdef extern from "position.hpp":
 Position.initZobrist()
 
 
-cdef extern from "cshogi.h":
+cdef extern from "cshogi_aoba.h":
     void HuffmanCodedPos_init()
     void PackedSfen_init()
     void Book_init()
@@ -228,7 +228,7 @@ PackedSfen_init()
 Book_init()
 
 
-cdef extern from "cshogi.h":
+cdef extern from "cshogi_aoba.h":
     string __to_usi(const int move)
     string __to_csa(const int move)
 
@@ -255,7 +255,7 @@ def to_csa(int move):
     return __to_csa(move)
 
 
-cdef extern from "cshogi.h":
+cdef extern from "cshogi_aoba.h":
     cdef cppclass __Board:
         __Board() except +
         __Board(const string& sfen) except +
@@ -1100,15 +1100,15 @@ cdef class Board:
         :return: A string representing the board in BOD format.
         :rtype: str
         """
-        import cshogi.KIF
+        import cshogi_aoba.KIF
         history = self.history
         if len(history) > 0:
             move = self.pop()
-            move_str = '\n手数＝' + str(self.move_number) + '　' + cshogi.KIF.move_to_bod(move, self) + '　まで'
+            move_str = '\n手数＝' + str(self.move_number) + '　' + cshogi_aoba.KIF.move_to_bod(move, self) + '　まで'
             self.push(move)
-            return cshogi.KIF.board_to_bod(self) + move_str
+            return cshogi_aoba.KIF.board_to_bod(self) + move_str
         else:
-            return cshogi.KIF.board_to_bod(self)
+            return cshogi_aoba.KIF.board_to_bod(self)
 
 
 def piece_to_piece_type(int p):
@@ -1166,7 +1166,7 @@ def rotate_sfen(str sfen):
     return __rotate_sfen(sfen.encode('ascii')).decode('ascii')
 
 
-cdef extern from "cshogi.h":
+cdef extern from "cshogi_aoba.h":
     cdef cppclass __LegalMoveList:
         __LegalMoveList() except +
         __LegalMoveList(const __Board& board) except +

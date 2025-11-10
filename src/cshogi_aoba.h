@@ -1,5 +1,5 @@
-﻿#ifndef CSHOGI_H
-#define CSHOGI_H
+﻿#ifndef CSHOGI_AOABA_H
+#define CSHOGI_AOABA_H
 
 #include "init.hpp"
 #include "position.hpp"
@@ -14,7 +14,8 @@ constexpr int PIECETYPE_NUM = 14; // 駒の種類
 constexpr int MAX_ATTACK_NUM = 3; // 利き数の最大値
 constexpr u32 MAX_FEATURES1_NUM = PIECETYPE_NUM/*駒の配置*/ + PIECETYPE_NUM/*駒の利き*/ + MAX_ATTACK_NUM/*利き数*/;
 
-constexpr int MAX_HPAWN_NUM = 8; // 歩の持ち駒の上限
+//constexpr int MAX_HPAWN_NUM = 8; // 歩の持ち駒の上限
+constexpr int MAX_HPAWN_NUM = 18; // 歩の持ち駒の上限
 constexpr int MAX_HLANCE_NUM = 4;
 constexpr int MAX_HKNIGHT_NUM = 4;
 constexpr int MAX_HSILVER_NUM = 4;
@@ -32,7 +33,8 @@ constexpr u32 MAX_PIECES_IN_HAND[] = {
 };
 constexpr u32 MAX_PIECES_IN_HAND_SUM = MAX_HPAWN_NUM + MAX_HLANCE_NUM + MAX_HKNIGHT_NUM + MAX_HSILVER_NUM + MAX_HGOLD_NUM + MAX_HBISHOP_NUM + MAX_HROOK_NUM;
 constexpr u32 MAX_FEATURES2_HAND_NUM = (int)ColorNum * MAX_PIECES_IN_HAND_SUM;
-constexpr u32 MAX_FEATURES2_NUM = MAX_FEATURES2_HAND_NUM + 1/*王手*/;
+//constexpr u32 MAX_FEATURES2_NUM = MAX_FEATURES2_HAND_NUM + 1/*王手*/;
+constexpr u32 MAX_FEATURES2_NUM = MAX_FEATURES2_HAND_NUM + 1/*王手*/ + 1/*手番*/ + 8/*手数*/;
 
 // 移動の定数
 enum MOVE_DIRECTION {
@@ -410,6 +412,7 @@ public:
             const u32 numHRook = hand.numOf(HRook);
             std::fill_n((*features2_hand)[c2][MAX_HPAWN_NUM + MAX_HLANCE_NUM + MAX_HKNIGHT_NUM + MAX_HSILVER_NUM + MAX_HGOLD_NUM + MAX_HBISHOP_NUM], (int)SquareNum * numHRook, 1);
 
+
             // 入玉宣言
             if (use_nyugyoku_features) {
                 // 敵陣のマスク
@@ -447,6 +450,42 @@ public:
         if (pos.inCheck()) {
             std::fill_n((*features2)[MAX_FEATURES2_HAND_NUM], SquareNum, 1);
         }
+
+
+		// 手番
+		if (pos.turn() == White) {
+            std::fill_n((*features2)[MAX_FEATURES2_HAND_NUM + 1], SquareNum, 1);
+		}
+		// 手数は40手ごとに区切る。190手まで0、230手まで1、470手まで7、以降は8
+		int gp_org = pos.gamePly();
+
+		const int MAX_DRAW_MOVES = 513;	// 513手目が指せれば引き分け
+		float div = MAX_DRAW_MOVES-1;
+		// 513手目が指せれば引き分け。floodgateは256手目(513手目、2024年1月7日から)が指せれば引き分け。選手権は321手目が指せれば引き分け。
+		int tt = gp_org;	// + sfen_current_move_number;
+		if ( tt > div ) tt = div;
+		int draw_ply = 0;	// draw_ply = 321; // draw_ply = 513; 学習中は0でいいか
+		if ( draw_ply && draw_ply < MAX_DRAW_MOVES ) {
+			int draw = draw_ply;	// 256, 321
+			int w = 160;	// 何手前から増加させるか。256手引き分けでw=60なら196手から増加
+			if ( draw - w < 0 ) w = draw;
+			int d = draw - w;
+	//		if ( tt > d ) tt += 513 - draw;				// 突然増加
+	//		if ( tt > d ) tt = (tt-d)*(513-d)/w + d;	// 線形に増加
+			if ( tt > d ) tt = (int)(1.0 / (1.0 + exp(-5.0*((tt-d)*2.0/w - 1.0))) * (513 - d) + d);	// sigmoidで半分で急激に増加, a = 5
+	//		PRT("tt=%d -> %d\n",t + sfen_current_move_number,tt);
+		}
+		int gp = tt;
+	//	fprintf(stderr,"gp_org=%d -> gp=%d(draw_ply=%d)\n",gp_org,gp,draw_ply);
+
+		if ( gp > 190 ) {
+			int g = ((gp - 190) / 40) + 1;
+	//		if ( g < 0 ) g = 0;
+			if ( g > 8 ) g = 8;
+//			set_features2(features2, MAX_FEATURES2_HAND_NUM + 2 + g-1);	// 460手だと7, "00000010"
+            std::fill_n((*features2)[MAX_FEATURES2_HAND_NUM + 2 + g-1], SquareNum, 1);
+		}
+
     }
 
     unsigned long long bookKey() {

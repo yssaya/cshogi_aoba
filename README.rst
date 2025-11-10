@@ -1,3 +1,15 @@
+cshogi aoba
+これは2025年版のAobaZeroのdlshogiモデル(非互換)を使って
+PSVの評価値を付け替えるためにcshogiからdlshogiを呼ぶ部分の
+入力特徴を変更したものです。
+
+psv_shuffle フォルダには shogi_hao_depth9 の評価値を書き換えるコードがあります。
+
+オリジナルのcshogiはこちらです。
+https://github.com/TadaoYamaoka/cshogi
+以下はオリジナルの説明です。
+
+
 cshogi: A Fast Shogi Library for Python
 =======================================
 .. image:: https://img.shields.io/pypi/v/cshogi.svg

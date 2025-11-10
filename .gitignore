@@ -8,6 +8,7 @@
 *.sln.docstates
 poetry.lock
 setup.py
+*.BAK
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

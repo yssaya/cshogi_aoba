@@ -1,5 +1,5 @@
-from cshogi import *
-from cshogi import KI2
+from cshogi_aoba import *
+from cshogi_aoba import KI2
 
 
 def test_move_to_ki2_issue37():

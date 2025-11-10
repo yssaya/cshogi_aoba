@@ -1,5 +1,5 @@
-import cshogi
-from cshogi.gym_shogi.envs import ShogiEnv
+import cshogi_aoba
+from cshogi_aoba.gym_shogi.envs import ShogiEnv
 
 class ShogiVecEnv:
     """A vectorized Shogi environment that can manage multiple instances of Shogi games simultaneously.

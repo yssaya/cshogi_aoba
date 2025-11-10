@@ -1,6 +1,6 @@
 from typing import Dict, List, Union, Optional
-import cshogi
-from cshogi import Parser
+import cshogi_aoba
+from cshogi_aoba import Parser
 
 COLOR_SYMBOLS = ['+', '-']
 JAPANESE_END_GAMES = {
@@ -43,7 +43,7 @@ class Exporter:
         """Close the file."""
         self.f.close()
 
-    def info(self, init_board: Optional[Union[str, cshogi.Board]] = None, names: Optional[List[str]] = None, var_info: Optional[Dict] = None, comment: Optional[str] = None, version: Optional[str] = None):
+    def info(self, init_board: Optional[Union[str, cshogi_aoba.Board]] = None, names: Optional[List[str]] = None, var_info: Optional[Dict] = None, comment: Optional[str] = None, version: Optional[str] = None):
         """Write game information to the file.
 
         :param init_board: The initial board state, defaults to None.
@@ -74,11 +74,11 @@ class Exporter:
                 self.f.write('\n')
         if init_board:
             if type(init_board) is str:
-                if init_board == cshogi.STARTING_SFEN:
+                if init_board == cshogi_aoba.STARTING_SFEN:
                     self.f.write('PI\n+\n')
-                    self.turn = cshogi.BLACK
+                    self.turn = cshogi_aoba.BLACK
                     return
-                board = cshogi.Board(sfen=init_board)
+                board = cshogi_aoba.Board(sfen=init_board)
             else:
                 board = init_board
             csa_pos = board.csa_pos()
@@ -89,7 +89,7 @@ class Exporter:
             self.turn = init_board.turn
         else:
             self.f.write('PI\n+\n')
-            self.turn = cshogi.BLACK
+            self.turn = cshogi_aoba.BLACK
 
     def move(self, move: int, time: Optional[int] = None, comment: Optional[str] = None, sep: str = '\n'):
         """Write a move to the file.
@@ -100,7 +100,7 @@ class Exporter:
         :param sep: Separator character, defaults to newline.
         """
         self.f.write(COLOR_SYMBOLS[self.turn])
-        self.f.write(cshogi.move_to_csa(move))
+        self.f.write(cshogi_aoba.move_to_csa(move))
         if time is not None:
             self.f.write(sep)
             self.f.write('T' + str(time))
@@ -108,7 +108,7 @@ class Exporter:
             self.f.write(sep)
             self.f.write("'" + comment)
         self.f.write('\n')
-        self.turn = cshogi.opponent(self.turn)
+        self.turn = cshogi_aoba.opponent(self.turn)
 
     def endgame(self, endgame: str, time: Optional[int] = None):
         """Write the endgame result to the file.

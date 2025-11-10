@@ -1,7 +1,7 @@
-from cshogi._cshogi import _dlshogi_FEATURES1_NUM as FEATURES1_NUM
-from cshogi._cshogi import _dlshogi_FEATURES2_NUM as FEATURES2_NUM
-from cshogi._cshogi import _dlshogi_make_move_label as make_move_label
-from cshogi import Board
+from cshogi_aoba._cshogi_aoba import _dlshogi_FEATURES1_NUM as FEATURES1_NUM
+from cshogi_aoba._cshogi_aoba import _dlshogi_FEATURES2_NUM as FEATURES2_NUM
+from cshogi_aoba._cshogi_aoba import _dlshogi_make_move_label as make_move_label
+from cshogi_aoba import Board
 import numpy as np
 
 __all__ = ["FEATURES1_NUM", "FEATURES2_NUM", "make_move_label", "use_nyugyoku_features", "make_input_features"]
@@ -21,7 +21,7 @@ def use_nyugyoku_features(use: bool):
 
     :param use: If True, use nyugyoku features; otherwise, use normal features.
     """
-    import cshogi._cshogi
-    cshogi._cshogi._dlshogi_use_nyugyoku_features(use)
+    import cshogi_aoba._cshogi_aoba
+    cshogi_aoba._cshogi_aoba._dlshogi_use_nyugyoku_features(use)
     global FEATURES2_NUM
-    FEATURES2_NUM = cshogi._cshogi._dlshogi_FEATURES2_NUM
+    FEATURES2_NUM = cshogi_aoba._cshogi_aoba._dlshogi_FEATURES2_NUM

@@ -1,4 +1,4 @@
-﻿#include "cshogi.h"
+﻿#include "cshogi_aoba.h"
 #include "parser.h"
 
 #include <fstream>

@@ -1,5 +1,5 @@
 from typing import List, Optional
-import cshogi
+import cshogi_aoba
 from datetime import datetime
 
 PGN_SQUARE_NAMES = [
@@ -25,14 +25,14 @@ PGN_PIECE_TYPES = [
 ]
 
 def move_to_san(move):
-    move_to = PGN_SQUARE_NAMES[cshogi.move_to(move)]
+    move_to = PGN_SQUARE_NAMES[cshogi_aoba.move_to(move)]
 
-    if cshogi.move_is_drop(move):
-        return PGN_HAND_PIECES[cshogi.move_drop_hand_piece(move)] + '@' + move_to
+    if cshogi_aoba.move_is_drop(move):
+        return PGN_HAND_PIECES[cshogi_aoba.move_drop_hand_piece(move)] + '@' + move_to
 
-    move_from = PGN_SQUARE_NAMES[cshogi.move_from(move)]
-    promotion = '+' if cshogi.move_is_promotion(move) else ''
-    return PGN_PIECE_TYPES[cshogi.move_from_piece_type(move)] + move_from + move_to + promotion
+    move_from = PGN_SQUARE_NAMES[cshogi_aoba.move_from(move)]
+    promotion = '+' if cshogi_aoba.move_is_promotion(move) else ''
+    return PGN_PIECE_TYPES[cshogi_aoba.move_from_piece_type(move)] + move_from + move_to + promotion
 
 class Exporter:
     """A class to handle the exporting of a game to PGN (Portable Game Notation) format.
@@ -76,11 +76,11 @@ class Exporter:
         self.f.write('[Round "' + str(round) + '"]\n')
         self.f.write('[White "' + names[0] + '"]\n')
         self.f.write('[Black "' + names[1] + '"]\n')
-        if result == cshogi.BLACK_WIN:
+        if result == cshogi_aoba.BLACK_WIN:
             self.result_str = '1-0'
-        elif result == cshogi.WHITE_WIN:
+        elif result == cshogi_aoba.WHITE_WIN:
             self.result_str = '0-1'
-        elif result == cshogi.DRAW:
+        elif result == cshogi_aoba.DRAW:
             self.result_str = '1/2-1/2'
         else:
             self.result_str = '*'

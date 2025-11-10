@@ -43,9 +43,9 @@ class MyBuildExt(build_ext):
 
 ext_modules = [
     Extension(
-        "cshogi._cshogi",
+        "cshogi_aoba._cshogi_aoba",
         sources=[
-            "cshogi/_cshogi.pyx",
+            "cshogi_aoba/_cshogi_aoba.pyx",
             "src/bitboard.cpp",
             "src/common.cpp",
             "src/generateMoves.cpp",
@@ -70,28 +70,28 @@ ext_modules = [
         ],
     ),
     Extension(
-        "cshogi.gym_shogi.envs.shogi_env",
-        sources=["cshogi/gym_shogi/envs/shogi_env.pyx"],
+        "cshogi_aoba.gym_shogi.envs.shogi_env",
+        sources=["cshogi_aoba/gym_shogi/envs/shogi_env.pyx"],
         language="c++",
     ),
     Extension(
-        "cshogi.gym_shogi.envs.shogi_vec_env",
-        sources=["cshogi/gym_shogi/envs/shogi_vec_env.pyx"],
+        "cshogi_aoba.gym_shogi.envs.shogi_vec_env",
+        sources=["cshogi_aoba/gym_shogi/envs/shogi_vec_env.pyx"],
         language="c++",
     ),
 ]
 
 
 packages = [
-    "cshogi",
-    "cshogi.dlshogi",
-    "cshogi.gym_shogi",
-    "cshogi.gym_shogi.envs",
-    "cshogi.usi",
-    "cshogi.web",
+    "cshogi_aoba",
+    "cshogi_aoba.dlshogi",
+    "cshogi_aoba.gym_shogi",
+    "cshogi_aoba.gym_shogi.envs",
+    "cshogi_aoba.usi",
+    "cshogi_aoba.web",
 ]
 
-package_data = {"": ["*"], "cshogi.web": ["static/*", "templates/*"]}
+package_data = {"": ["*"], "cshogi_aoba.web": ["static/*", "templates/*"]}
 
 extras_require = {
     ':python_version == "3.6"': ["numpy>=1.19.5,<1.20.0"],
@@ -102,7 +102,7 @@ extras_require = {
 }
 
 setup_kwargs = {
-    "name": "cshogi",
+    "name": "cshogi_aoba",
     "version": "0.9.3",
     "description": "A fast Python shogi library",
     "long_description": None,
@@ -110,7 +110,7 @@ setup_kwargs = {
     "author_email": "tadaoyamaoka@gmail.com",
     "maintainer": "Tadao Yamaoka",
     "maintainer_email": "tadaoyamaoka@gmail.com",
-    "url": "https://github.com/TadaoYamaoka/cshogi",
+    "url": "https://github.com/TadaoYamaoka/cshogi_aoba",
     "packages": packages,
     "package_data": package_data,
     "extras_require": extras_require,

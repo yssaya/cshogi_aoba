@@ -1,8 +1,8 @@
 from typing import Dict, Optional
 import math
-from cshogi import Board, CSA, KIF, BLACK, WHITE, opponent, REPETITION_WIN, REPETITION_LOSE
-from cshogi.usi import Engine
-from cshogi.cli import usi_info_to_score, usi_info_to_csa_comment, re_usi_info
+from cshogi_aoba import Board, CSA, KIF, BLACK, WHITE, opponent, REPETITION_WIN, REPETITION_LOSE
+from cshogi_aoba.usi import Engine
+from cshogi_aoba.cli import usi_info_to_score, usi_info_to_csa_comment, re_usi_info
 from flask import Flask, render_template, request
 from wsgiref.simple_server import make_server
 

@@ -1,5 +1,5 @@
-import cshogi
-import cshogi.usi
-import cshogi.web.app
-import cshogi.dlshogi
-import cshogi.gym_shogi
+import cshogi_aoba
+import cshogi_aoba.usi
+import cshogi_aoba.web.app
+import cshogi_aoba.dlshogi
+import cshogi_aoba.gym_shogi
