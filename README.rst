@@ -1,4 +1,6 @@
 cshogi aoba
+=====
+
 これは2025年版のAobaZeroのdlshogiモデル(非互換)を使って
 PSVの評価値を付け替えるためにcshogiからdlshogiを呼ぶ部分の
 入力特徴を変更したものです。
@@ -6,7 +8,13 @@ PSVの評価値を付け替えるためにcshogiからdlshogiを呼ぶ部分の
 psv_shuffle フォルダには shogi_hao_depth9 の評価値を書き換えるコードがあります。
 
 オリジナルのcshogiはこちらです。
+
 https://github.com/TadaoYamaoka/cshogi
+
+2025年の選手権のAobaZeroのモデルは
+
+http://www.yss-aya.com/bbs/patio.cgi?read=175&ukey=0
+
 以下はオリジナルの説明です。
 
 
