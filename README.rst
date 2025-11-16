@@ -7,14 +7,12 @@ PSVの評価値を付け替えるためにcshogiからdlshogiを呼ぶ部分の
 
 psv_shuffle フォルダには shogi_hao_depth9 の評価値を書き換えるコードがあります。
 
-オリジナルのcshogiはこちらです。
+| オリジナルのcshogiはこちらです。  
+| https://github.com/TadaoYamaoka/cshogi
+| 2025年の選手権のAobaZeroのモデルは  
+| http://www.yss-aya.com/bbs/patio.cgi?read=175&ukey=0
 
-https://github.com/TadaoYamaoka/cshogi
-
-2025年の選手権のAobaZeroのモデルは
-
-http://www.yss-aya.com/bbs/patio.cgi?read=175&ukey=0
-
+|
 以下はオリジナルの説明です。
 
 
